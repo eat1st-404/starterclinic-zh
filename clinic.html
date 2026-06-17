@@ -63,10 +63,14 @@
     .save-note:focus { border-color: var(--accent); }
 
     @media (max-width: 600px) {
-      .container { padding: 0 24px; margin-top: 36px; }
+      .container { padding: 0 16px; margin-top: 28px; margin-bottom: 120px; }
       .input-row { grid-template-columns: 1fr; }
-      .page-header { flex-direction: column-reverse; }
-      .page-char { width: 80px; align-self: flex-end; }
+      .page-header { flex-direction: column-reverse; gap: 12px; margin-bottom: 24px; }
+      .page-header h1 { font-size: 1.4rem; }
+      .page-char { width: 72px; align-self: flex-end; }
+      .clinic-step { padding: 20px 16px; }
+      .clinic-output { padding: 20px 16px; }
+      .output-next, .output-advice { padding: 14px 16px; font-size: 0.9rem; }
     }
   </style>
 </head>

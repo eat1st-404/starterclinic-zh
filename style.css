@@ -148,9 +148,34 @@ footer {
 
 /* ── 响应式 ── */
 @media (max-width: 600px) {
-  nav { padding: 14px 24px; }
+  nav { padding: 12px 16px; }
+  .logo { font-size: 0.85rem; letter-spacing: 0; }
   .nav-center { display: none; }
   .nav-right { display: none; }
   .nav-hamburger { display: flex; }
-  .contact-bar { padding: 10px 24px; }
+
+  /* 防止 iOS 表单自动缩放 */
+  input[type="text"], input[type="number"], select, textarea {
+    font-size: 16px !important;
+  }
+
+  /* 按钮 */
+  .btn-primary, .btn-outline { padding: 13px 20px; font-size: 0.95rem; width: 100%; display: block; }
+
+  /* 底部联系栏：隐藏文字标签，只留图标 */
+  .contact-bar {
+    padding: 10px 20px;
+    gap: 16px;
+    justify-content: center;
+  }
+  .contact-bar > span { display: none; }
+  .contact-icon { font-size: 0; gap: 0; }
+  .contact-icon svg { width: 22px; height: 22px; }
+
+  /* footer */
+  footer { padding: 20px 20px 72px; }
+
+  /* 卡片/区块 padding 收窄 */
+  .card { padding: 20px; }
+  .note { padding: 16px 18px; }
 }
