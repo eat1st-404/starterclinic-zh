@@ -46,6 +46,12 @@
       .hero-stats { gap: 24px; flex-wrap: wrap; justify-content: center; }
       .stat-num { font-size: 1.3rem; }
     }
+    .starter-name {
+      border-bottom: 2px dashed var(--accent);
+      cursor: pointer; color: var(--accent);
+      transition: opacity 0.15s;
+    }
+    .starter-name:hover { opacity: 0.7; }
   </style>
 </head>
 <body>
@@ -85,7 +91,7 @@
 
   <div class="hero">
     <img src="assets/images/char-hero.png" alt="" class="hero-char" />
-    <div class="hero-greeting">你的酵种今天怎么样啦？</div>
+    <div class="hero-greeting">你的<span id="starterName" class="starter-name" onclick="editStarterName()" title="点击修改名字">酵种</span>今天怎么样啦？</div>
     <div class="hero-sub">描述一下你观察到的，我来帮你读懂它。</div>
     <div class="hero-actions">
       <a href="clinic.html" class="btn-primary">开始问诊 →</a>
@@ -171,6 +177,22 @@
 
     function openMobileMenu() { document.getElementById('mobileMenu').classList.add('open'); }
     function closeMobileMenu() { document.getElementById('mobileMenu').classList.remove('open'); }
+
+    // 酵种名字
+    const STARTER_NAME_KEY = 'sc_starter_name';
+    function getStarterName() { return localStorage.getItem(STARTER_NAME_KEY) || '酵种'; }
+    function applyStarterName() {
+      document.getElementById('starterName').textContent = getStarterName();
+    }
+    function editStarterName() {
+      const current = getStarterName();
+      const name = prompt('给你的酵种起个名字吧～', current === '酵种' ? '' : current);
+      if (name === null) return;
+      const trimmed = name.trim();
+      localStorage.setItem(STARTER_NAME_KEY, trimmed || '酵种');
+      applyStarterName();
+    }
+    applyStarterName();
   </script>
 </body>
 </html>

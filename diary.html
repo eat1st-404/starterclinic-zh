@@ -76,6 +76,13 @@
     .login-prompt h2 { font-family: 'Cubic 11', monospace; font-size: 1.2rem; margin-bottom: 12px; }
     .login-prompt p { color: var(--muted); margin-bottom: 24px; }
 
+    .starter-name-diary {
+      border-bottom: 2px dashed var(--accent);
+      cursor: pointer; color: var(--accent);
+      transition: opacity 0.15s;
+    }
+    .starter-name-diary:hover { opacity: 0.7; }
+
     @media (max-width: 600px) {
       .container { padding: 0 16px; margin-top: 28px; margin-bottom: 120px; }
       .page-header h1 { font-size: 1.4rem; }
@@ -357,8 +364,9 @@
       document.getElementById('loginPrompt').style.display = 'none';
       document.getElementById('diaryContent').style.display = 'block';
 
-      const contact = getContact();
-      document.getElementById('pageTitle').textContent = `${contact} 的酵种日记`;
+      const starterName = localStorage.getItem('sc_starter_name') || '酵种';
+      const nameSpan = `<span id="starterNameDiary" class="starter-name-diary" onclick="editStarterNameDiary()" title="点击修改名字">${starterName}</span>`;
+      document.getElementById('pageTitle').innerHTML = `${nameSpan} 的日记`;
       document.getElementById('pageSubtitle').textContent = '每一次问诊，都是一次了解它的机会。';
 
       _records = await getUserRecords(uid);
@@ -375,6 +383,16 @@
       init(uid);
     } else {
       document.getElementById('loginPrompt').style.display = 'block';
+    }
+
+    function editStarterNameDiary() {
+      const current = localStorage.getItem('sc_starter_name') || '酵种';
+      const name = prompt('给你的酵种起个名字吧～', current === '酵种' ? '' : current);
+      if (name === null) return;
+      const trimmed = name.trim();
+      localStorage.setItem('sc_starter_name', trimmed || '酵种');
+      const el = document.getElementById('starterNameDiary');
+      if (el) el.textContent = trimmed || '酵种';
     }
   </script>
 </body>
