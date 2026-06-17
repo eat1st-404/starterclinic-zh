@@ -405,13 +405,8 @@
         return;
       }
       const note = document.getElementById('saveNote').value.trim();
-      const result = await saveRecord(uid, { ..._lastDiagnosis, note });
-      console.log('saveRecord result:', JSON.stringify(result));
-      if (result && result[0] && result[0].id) {
-        document.getElementById('saveConfirm').style.display = 'block';
-      } else {
-        alert('存档失败，请打开控制台（F12）查看 saveRecord result 错误信息');
-      }
+      await saveRecord(uid, { ..._lastDiagnosis, note });
+      document.getElementById('saveConfirm').style.display = 'block';
     }
   </script>
 </body>
