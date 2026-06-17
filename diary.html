@@ -348,6 +348,7 @@
 
     async function init(uid) {
       if (!uid) { document.getElementById('loginPrompt').style.display = 'block'; return; }
+      document.getElementById('loginPrompt').style.display = 'none';
       document.getElementById('diaryContent').style.display = 'block';
 
       const contact = getContact();
