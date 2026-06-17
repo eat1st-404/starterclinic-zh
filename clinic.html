@@ -269,8 +269,8 @@
     function setRatio(val) { document.getElementById('ratioInput').value = val; }
 
     const EMOJI_MAP = {
-      peak: '🌟', rising: '📈', falling: '😴',
-      good: '✅', low: '⚠️', weak: '😬', na: '🐣'
+      peak: '🌟', rising: '📈', falling: '😴', flat: '😶',
+      good: '✅', low: '⚠️', weak: '😬', past: '🌙', na: '🐣'
     };
 
     let _lastDiagnosis = null;
@@ -317,7 +317,7 @@
           advice = '用100%高筋粉或中筋粉来培养新酵种，失败率非常高。启动发酵的野生酵母和菌群住在麦粒的外皮上——精制面粉在磨制过程中去掉了这部分。';
           nextStep = '换成至少50%全麦粉的混合粉。全麦提供菌群，高筋粉提供易消化的糖。前10天保持这个配比。';
         } else if (rise === 'none' && trend === 'flat') {
-          activity = '较弱'; state = '「安静期」——正常';
+          activity = '较弱'; state = '「安静期」——正常'; emoji = EMOJI_MAP.flat;
           advice = `这个阶段几乎没有动静是正常的——你正处于「安静期」，坏菌已经消退，酵母种群正在缓慢重建。这是最容易让人慌乱的时刻，很多人会在这里过度喂食，反而越喂越糟。`;
           nextStep = '不要因为时间到了就丢弃重喂。先观察表面气泡。当你看到气泡活动比昨天明显增多，再丢弃80%，喂50g面粉+50g水（1:2:2）。如果24小时后还是没动静，搅拌一下再等12小时。';
         } else if (rise === 'small' || trend === 'rising') {
@@ -325,7 +325,7 @@
           advice = '有些活动了——酵母种群开始建立。关键信号是气泡活动是否一天比一天多，而不是涨了多少。';
           nextStep = '等酵种明显过了峰值（体积开始下降，或表面气泡开始消退）再丢弃重喂。喂太早等于扔掉了你刚养出来的80%酵母。';
         } else if (smell === 'alcohol') {
-          activity = '过渡期'; state = '菌群平衡转变中';
+          activity = '过渡期'; state = '菌群平衡转变中'; emoji = EMOJI_MAP.flat;
           advice = '第4-10天出现酒精味是正常的，菌群平衡正在转变中。这不一定意味着酵种饿了，可能只是在过渡期。';
           nextStep = '先看气泡活动。如果有明显气泡且在上涨，就等过了峰值再用1:2:2喂食。如果24小时后完全没动静，可以试试1:1:1配温水（28°C）来刺激一下。';
         } else if (rise === 'double' || rise === 'more') {
@@ -338,7 +338,7 @@
           nextStep = '看气泡，不要看时钟。等气泡活动比昨天多、且酵种过了峰值之后，再丢弃重喂。温度24-27°C会加速这个过程。';
         }
       } else if (stage === 'fridge') {
-        activity = '苏醒中'; state = '冰箱唤醒——需要1-2次喂食'; emoji = EMOJI_MAP.falling;
+        activity = '苏醒中'; state = '冰箱唤醒——需要1-2次喂食'; emoji = EMOJI_MAP.past;
         advice = '刚从冰箱出来的酵种需要1-2次温热喂食才能完全醒过来。冷藏会大幅减缓酵母活动——不要用出冰箱后几小时的状态来判断它的健康。';
         nextStep = '现在用温水（约28°C）喂一次，放在室温（24-27°C）。等一个完整的涨落循环（通常6-12小时），再喂第二次。第二次喂食后，在它圆顶冒泡时使用。';
       } else if (temp > 27) {
@@ -360,7 +360,7 @@
         advice = '你的酵种看起来准备好了。标准就绪检验：在23°C用1:2:2喂食后4-7小时内翻倍，连续三天。';
         nextStep = '今天烘焙的话现在就用。如果不烘焙，放冰箱——可以保存一周。下次烘焙前喂一次，等它再次到顶峰。';
       } else if ((rise === 'double' || rise === 'more') && trend === 'falling') {
-        activity = '良好'; state = '已过峰值——尽快喂食'; emoji = EMOJI_MAP.falling;
+        activity = '良好'; state = '已过峰值——尽快喂食'; emoji = EMOJI_MAP.past;
         advice = '你的酵种已经过了峰值，但还能用。';
         nextStep = '如果几小时内就要烘焙，直接用——面包会稍微酸一点。否则现在喂食1:2:2，或者放冰箱。';
       } else if ((rise === 'double' || rise === 'more') && trend === 'rising') {
@@ -372,11 +372,11 @@
         advice = '成熟酵种出现浓烈奶酪味，通常说明乙酸菌占主导——常见原因是低水化、低温或喂食不够频繁。';
         nextStep = '试试稍微高一点的水量（1:2:2.5），移到更暖的地方（24-26°C）。坚持每24小时喂一次，连续3-5天让菌群重新平衡。';
       } else if (rise === 'none' && hours > 16) {
-        activity = '较弱'; state = `${hours}小时无动静`; emoji = EMOJI_MAP.weak;
+        activity = '较弱'; state = `${hours}小时无动静`; emoji = EMOJI_MAP.flat;
         advice = `在 ${temp}°C 下，超过 ${hours} 小时几乎没有动静，说明菌群偏弱，或者上次喂食比例太稀。`;
         nextStep = `用温水（28°C）做一次1:1:1的集中喂食来刺激。等气泡活动恢复后，再回到 ${ratio || '1:2:2'} 正常喂食。`;
       } else {
-        activity = '偏弱'; state = '需要关注'; emoji = EMOJI_MAP.weak;
+        activity = '偏弱'; state = '需要关注'; emoji = EMOJI_MAP.flat;
         advice = '在这些条件下，活性低于预期。';
         nextStep = '用温水（28°C）按1:2:2喂食。确保罐子干净，没有干皮混入。8小时后检查气泡。';
       }
