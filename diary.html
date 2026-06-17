@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="assets/images/icon-bread.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>我的日记 — 酵种问诊日记</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .container { max-width: 760px; margin: 56px auto 100px; padding: 0 40px; }
+    .page-header { margin-bottom: 40px; }
+    .page-header h1 { font-size: 1.8rem; margin-bottom: 8px; }
+    .page-header p { color: var(--muted); }
+
+    /* 日历 */
+    .calendar-wrap { margin-bottom: 48px; }
+    .cal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .cal-title { font-family: 'Cubic 11', monospace; font-size: 1rem; color: var(--text); }
+    .cal-nav { background: none; border: 1.5px solid var(--border); padding: 4px 12px; cursor: pointer; font-family: inherit; color: var(--muted); font-size: 1rem; }
+    .cal-nav:hover { border-color: var(--accent); color: var(--accent); }
+    .cal-grid {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      gap: 4px; text-align: center;
+    }
+    .cal-dow { font-size: 0.75rem; color: var(--muted); padding: 4px 0; }
+    .cal-cell {
+      padding: 6px 2px; font-size: 0.78rem; color: var(--muted);
+      border: 1.5px solid transparent; cursor: default; border-radius: 0;
+      min-height: 52px; display: flex; flex-direction: column;
+      align-items: center; gap: 2px;
+    }
+    .cal-cell.has-record { border-color: var(--border); background: white; cursor: pointer; }
+    .cal-cell.has-record:hover { border-color: var(--accent); }
+    .cal-cell.today { border-color: var(--accent); }
+    .cal-cell.selected { background: #ecddc8; border-color: var(--accent); }
+    .cal-date { font-size: 0.75rem; }
+    .cal-emoji { font-size: 1.2rem; line-height: 1; }
+
+    /* 周报 */
+    .week-report { border: 2px solid var(--accent); background: #ecddc8; padding: 28px; margin-bottom: 40px; }
+    .week-report-title { font-family: 'Cubic 11', monospace; font-size: 0.9rem; color: var(--accent); margin-bottom: 16px; }
+    .week-report-body { font-size: 0.95rem; line-height: 1.85; }
+    .week-report-body p { margin-bottom: 10px; }
+    .week-report-body strong { color: var(--accent); }
+
+    /* 记录列表 */
+    .records-title { font-family: 'Cubic 11', monospace; font-size: 0.85rem; color: var(--accent); margin-bottom: 20px; }
+    .record-card {
+      border: 2px solid var(--border); background: white;
+      padding: 20px 24px; margin-bottom: 16px;
+    }
+    .record-card:hover { border-color: var(--accent); }
+    .record-meta {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 10px; font-size: 0.82rem; color: var(--muted);
+    }
+    .record-emoji { font-size: 1.4rem; }
+    .record-activity { font-weight: 600; color: var(--text); font-size: 0.95rem; margin-bottom: 4px; }
+    .record-state { font-size: 0.88rem; color: var(--muted); margin-bottom: 8px; }
+    .record-advice { font-size: 0.88rem; line-height: 1.7; color: var(--text); }
+    .record-note { margin-top: 10px; font-size: 0.85rem; color: var(--muted); font-style: italic; border-top: 1px solid var(--border); padding-top: 10px; }
+    .record-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .tag { padding: 3px 10px; border: 1px solid var(--border); font-size: 0.75rem; color: var(--muted); }
+
+    .empty-state { text-align: center; padding: 64px 24px; color: var(--muted); }
+    .empty-state .char { width: 80px; margin: 0 auto 20px; }
+    .empty-state p { margin-bottom: 20px; }
+
+    .login-prompt { text-align: center; padding: 80px 24px; }
+    .login-prompt h2 { font-family: 'Cubic 11', monospace; font-size: 1.2rem; margin-bottom: 12px; }
+    .login-prompt p { color: var(--muted); margin-bottom: 24px; }
+
+    @media (max-width: 600px) {
+      .container { padding: 0 20px; margin-top: 36px; }
+      .cal-cell { min-height: 44px; }
+      .cal-emoji { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="logo">酵种问诊日记</a>
+    <img src="assets/images/char-group.png" alt="" class="nav-center" style="height:28px;">
+    <div class="nav-right">
+      <a href="diary.html" class="nav-link active">我的日记</a>
+      <button class="nav-auth" id="navAuthBtn" onclick="openLogin()">登录</button>
+    </div>
+    <button class="nav-hamburger" onclick="openMobileMenu()"><span></span><span></span><span></span></button>
+  </nav>
+  <div class="nav-mobile-menu" id="mobileMenu">
+    <button class="nav-mobile-close" onclick="closeMobileMenu()">✕</button>
+    <a href="diary.html" class="nav-link" onclick="closeMobileMenu()">我的日记</a>
+    <button class="nav-auth" id="navAuthBtnMobile" onclick="openLogin()" style="margin-left:0;">登录</button>
+  </div>
+  <div class="login-overlay" id="loginOverlay" onclick="handleOverlayClick(event)">
+    <div class="login-box">
+      <h2>开始记录</h2>
+      <p>填手机号或邮箱，你的问诊记录会自动存档。</p>
+      <input type="text" id="loginInput" placeholder="手机号 / 邮箱" />
+      <button class="btn-primary" onclick="doLogin()">继续 →</button>
+    </div>
+  </div>
+
+  <div class="container" id="mainContent">
+    <div class="login-prompt" id="loginPrompt" style="display:none;">
+      <img src="assets/images/char-jar-chef.png" alt="" class="char" style="width:80px; margin:0 auto 20px; display:block;">
+      <h2>登录后查看你的酵种日记</h2>
+      <p>你的每一次问诊都会存在这里。</p>
+      <button class="btn-primary" onclick="openLogin()">登录 / 注册</button>
+    </div>
+
+    <div id="diaryContent" style="display:none;">
+      <div class="page-header">
+        <div class="section-label">我的日记</div>
+        <h1 id="pageTitle">酵种日记</h1>
+        <p id="pageSubtitle"></p>
+      </div>
+
+      <!-- 日历 -->
+      <div class="calendar-wrap">
+        <div class="cal-header">
+          <button class="cal-nav" onclick="changeMonth(-1)">←</button>
+          <div class="cal-title" id="calTitle"></div>
+          <button class="cal-nav" onclick="changeMonth(1)">→</button>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+      </div>
+
+      <!-- 周报 -->
+      <div class="week-report" id="weekReport" style="display:none;">
+        <div class="week-report-title" id="weekReportTitle"></div>
+        <div class="week-report-body" id="weekReportBody"></div>
+      </div>
+
+      <!-- 记录列表 -->
+      <div class="records-title" id="recordsTitle">全部记录</div>
+      <div id="recordsList"></div>
+    </div>
+  </div>
+
+  <footer>酵种问诊日记 — 用最直白的话，读懂你的酵种</footer>
+
+  <div class="contact-bar">
+    <span>联系我们</span>
+    <a class="contact-icon" title="小红书" href="#" target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <rect x="3" y="3" width="18" height="18" rx="4"/>
+        <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none"/>
+        <path d="M8 12h8M12 8v8"/>
+      </svg>
+      小红书
+    </a>
+    <a class="contact-icon" title="微信" href="#" target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M9 11.5c3.5 0 6.5-2 6.5-4.5S12.5 2.5 9 2.5 2.5 4.5 2.5 7c0 1.4.8 2.7 2 3.5L3.5 13l2.8-1.2c.8.2 1.7.3 2.7.3z"/>
+        <path d="M15 13.5c2.8 0 5 1.6 5 3.5 0 1-.6 2-1.6 2.7l.6 2-2.2-1c-.6.1-1.2.2-1.8.2-2.8 0-5-1.6-5-3.5s2.2-3.5 5-3.5z"/>
+      </svg>
+      微信
+    </a>
+  </div>
+
+  <script src="supabase.js"></script>
+  <script>
+    const AUTH_KEY = 'sc_user_contact';
+    const USER_ID_KEY = 'sc_user_id';
+    function getContact() { return localStorage.getItem(AUTH_KEY); }
+    function getUserId() { return localStorage.getItem(USER_ID_KEY); }
+
+    function updateNav() {
+      const c = getContact();
+      ['navAuthBtn','navAuthBtnMobile'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        if (c) { btn.textContent = c.length > 10 ? c.slice(0,10)+'…' : c; btn.classList.add('logged-in'); }
+        else { btn.textContent = '登录'; btn.classList.remove('logged-in'); }
+      });
+    }
+    function openLogin() {
+      const c = getContact();
+      if (c && confirm(`退出登录（${c}）？`)) { localStorage.removeItem(AUTH_KEY); localStorage.removeItem(USER_ID_KEY); updateNav(); location.reload(); return; }
+      if (!c) document.getElementById('loginOverlay').classList.add('open');
+    }
+    function handleOverlayClick(e) { if (e.target === document.getElementById('loginOverlay')) document.getElementById('loginOverlay').classList.remove('open'); }
+    async function doLogin() {
+      const val = document.getElementById('loginInput').value.trim();
+      if (!val) { alert('请填写手机号或邮箱'); return; }
+      const uid = await getOrCreateUser(val);
+      localStorage.setItem(AUTH_KEY, val); localStorage.setItem(USER_ID_KEY, uid);
+      document.getElementById('loginOverlay').classList.remove('open');
+      updateNav(); init(uid);
+    }
+    updateNav();
+    function openMobileMenu() { document.getElementById('mobileMenu').classList.add('open'); }
+    function closeMobileMenu() { document.getElementById('mobileMenu').classList.remove('open'); }
+
+    // ── 日历 ──
+    let _records = [];
+    let _calYear, _calMonth, _selectedDate = null;
+
+    function changeMonth(d) {
+      _calMonth += d;
+      if (_calMonth > 11) { _calMonth = 0; _calYear++; }
+      if (_calMonth < 0) { _calMonth = 11; _calYear--; }
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      const title = `${_calYear}年${_calMonth + 1}月`;
+      document.getElementById('calTitle').textContent = title;
+
+      const grid = document.getElementById('calGrid');
+      grid.innerHTML = '';
+      ['日','一','二','三','四','五','六'].forEach(d => {
+        const el = document.createElement('div');
+        el.className = 'cal-dow'; el.textContent = d; grid.appendChild(el);
+      });
+
+      const today = new Date();
+      const firstDay = new Date(_calYear, _calMonth, 1).getDay();
+      const daysInMonth = new Date(_calYear, _calMonth + 1, 0).getDate();
+
+      // 当月每天的记录
+      const dayMap = {};
+      _records.forEach(r => {
+        const d = r.created_at.slice(0, 10);
+        if (!dayMap[d]) dayMap[d] = [];
+        dayMap[d].push(r);
+      });
+
+      for (let i = 0; i < firstDay; i++) {
+        grid.appendChild(document.createElement('div'));
+      }
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr = `${_calYear}-${String(_calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const dayRecords = dayMap[dateStr] || [];
+        const isToday = today.getFullYear()===_calYear && today.getMonth()===_calMonth && today.getDate()===d;
+        const isSelected = _selectedDate === dateStr;
+
+        const cell = document.createElement('div');
+        cell.className = 'cal-cell' + (dayRecords.length ? ' has-record' : '') + (isToday ? ' today' : '') + (isSelected ? ' selected' : '');
+
+        const dateEl = document.createElement('div');
+        dateEl.className = 'cal-date'; dateEl.textContent = d; cell.appendChild(dateEl);
+
+        if (dayRecords.length) {
+          const emojiEl = document.createElement('div');
+          emojiEl.className = 'cal-emoji';
+          // 取当天最后一条的 emoji
+          emojiEl.textContent = dayRecords[dayRecords.length - 1].emoji || '📋';
+          cell.appendChild(emojiEl);
+          cell.onclick = () => selectDate(dateStr, dayRecords);
+        }
+        grid.appendChild(cell);
+      }
+    }
+
+    function selectDate(dateStr, dayRecords) {
+      _selectedDate = _selectedDate === dateStr ? null : dateStr;
+      renderCalendar();
+      if (_selectedDate) {
+        document.getElementById('recordsTitle').textContent = `${dateStr} 的记录`;
+        renderRecords(dayRecords);
+        document.getElementById('recordsList').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else {
+        document.getElementById('recordsTitle').textContent = '全部记录';
+        renderRecords(_records);
+      }
+    }
+
+    // ── 周报 ──
+    function generateWeekReport(records) {
+      const now = new Date();
+      const weekStart = new Date(now); weekStart.setDate(now.getDate() - now.getDay());
+      weekStart.setHours(0,0,0,0);
+      const weekRecords = records.filter(r => new Date(r.created_at) >= weekStart);
+
+      if (!weekRecords.length) {
+        document.getElementById('weekReport').style.display = 'none';
+        return;
+      }
+
+      const activityCounts = {};
+      weekRecords.forEach(r => { activityCounts[r.activity] = (activityCounts[r.activity]||0)+1; });
+      const topActivity = Object.entries(activityCounts).sort((a,b)=>b[1]-a[1])[0]?.[0] || '未知';
+
+      const emojis = weekRecords.map(r => r.emoji).filter(Boolean);
+      const emojiStr = emojis.slice(-7).join(' ');
+
+      const temps = weekRecords.map(r => r.temp).filter(Boolean);
+      const avgTemp = temps.length ? (temps.reduce((a,b)=>a+b,0)/temps.length).toFixed(1) : null;
+
+      const peakCount = weekRecords.filter(r => r.trend === 'peak').length;
+      const flatCount = weekRecords.filter(r => r.trend === 'flat').length;
+
+      let summary = '';
+      if (peakCount >= weekRecords.length * 0.6) summary = '这周你的酵种状态很稳，多次抓到了峰值。';
+      else if (flatCount >= weekRecords.length * 0.5) summary = '这周酵种活性偏低，可以检查一下温度和喂食频率。';
+      else summary = '这周酵种状态起伏，还在调整节奏中。';
+
+      const el = document.getElementById('weekReport');
+      el.style.display = 'block';
+      document.getElementById('weekReportTitle').textContent = `本周小结（${weekRecords.length}次问诊）`;
+      document.getElementById('weekReportBody').innerHTML = `
+        <p>${emojiStr}</p>
+        <p>${summary}</p>
+        <p>本周最常见状态：<strong>${topActivity}</strong>${avgTemp ? `，平均室温 <strong>${avgTemp}°C</strong>` : ''}。</p>
+        ${peakCount > 0 ? `<p>共 <strong>${peakCount}</strong> 次抓到峰值——状态在线 ✓</p>` : ''}
+      `;
+    }
+
+    // ── 记录列表 ──
+    function renderRecords(records) {
+      const el = document.getElementById('recordsList');
+      if (!records.length) {
+        el.innerHTML = `<div class="empty-state"><p>还没有记录</p><a href="clinic.html" class="btn-primary">去问诊</a></div>`;
+        return;
+      }
+      el.innerHTML = records.map(r => {
+        const date = new Date(r.created_at);
+        const dateStr = date.toLocaleDateString('zh-CN', { month:'long', day:'numeric', hour:'2-digit', minute:'2-digit' });
+        const tags = [r.stage && stageLabel(r.stage), r.flour, r.ratio, r.temp ? `${r.temp}°C` : null].filter(Boolean);
+        return `
+          <div class="record-card">
+            <div class="record-meta">
+              <span>${dateStr}</span>
+              <span class="record-emoji">${r.emoji || '📋'}</span>
+            </div>
+            <div class="record-activity">${r.activity || ''}</div>
+            <div class="record-state">${r.state || ''}</div>
+            <div class="record-advice">${r.advice || ''}</div>
+            ${tags.length ? `<div class="record-tags">${tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>` : ''}
+            ${r.note ? `<div class="record-note">${r.note}</div>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function stageLabel(s) {
+      return { 'early-new':'第1-3天', 'early-building':'第4-10天', 'stable':'成熟', 'fridge':'冰箱唤醒' }[s] || s;
+    }
+
+    async function init(uid) {
+      if (!uid) { document.getElementById('loginPrompt').style.display = 'block'; return; }
+      document.getElementById('diaryContent').style.display = 'block';
+
+      const contact = getContact();
+      document.getElementById('pageTitle').textContent = `${contact} 的酵种日记`;
+      document.getElementById('pageSubtitle').textContent = '每一次问诊，都是一次了解它的机会。';
+
+      _records = await getUserRecords(uid);
+
+      const now = new Date();
+      _calYear = now.getFullYear(); _calMonth = now.getMonth();
+      renderCalendar();
+      generateWeekReport(_records);
+      renderRecords(_records);
+    }
+
+    const uid = getUserId();
+    if (uid) {
+      init(uid);
+    } else {
+      document.getElementById('loginPrompt').style.display = 'block';
+    }
+  </script>
+</body>
+</html>

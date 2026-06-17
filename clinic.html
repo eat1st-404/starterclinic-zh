@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="assets/images/icon-bread.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>问诊 — 酵种问诊日记</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .container { max-width: 720px; margin: 56px auto 100px; padding: 0 40px; }
+    .page-header { display: flex; align-items: flex-end; gap: 24px; margin-bottom: 40px; }
+    .page-header-text { flex: 1; }
+    .page-header h1 { font-size: 1.8rem; margin-bottom: 8px; }
+    .page-header p { color: var(--muted); }
+    .page-char { width: 100px; flex-shrink: 0; }
+
+    .clinic-step { border: 2px solid var(--border); padding: 28px; background: white; margin-bottom: 20px; }
+    .step-title {
+      font-family: 'Cubic 11', monospace; font-size: 0.85rem;
+      color: var(--accent); margin-bottom: 20px; line-height: 1.7;
+    }
+
+    .clinic-output {
+      border: 2px solid var(--accent); padding: 28px; background: #ecddc8;
+      display: none; margin-top: 24px;
+    }
+    .output-title {
+      font-family: 'Cubic 11', monospace; font-size: 0.85rem;
+      color: var(--accent); margin-bottom: 20px;
+    }
+    .output-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 0.95rem;
+    }
+    .output-row:last-of-type { border-bottom: none; }
+    .output-label { color: var(--muted); font-size: 0.85rem; }
+    .output-value { font-weight: 600; }
+    .output-emoji { font-size: 2rem; text-align: center; margin-bottom: 16px; }
+    .output-advice {
+      margin-top: 20px; padding: 18px 20px; background: white;
+      border-left: 4px solid var(--accent); font-size: 0.95rem; line-height: 1.85;
+    }
+    .output-next {
+      margin-top: 14px; padding: 16px 20px; background: white;
+      border-left: 4px solid var(--border); font-size: 0.9rem; line-height: 1.85; color: var(--muted);
+    }
+    .output-next strong { color: var(--text); display: block; margin-bottom: 6px; }
+
+    .save-row { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
+    .save-row p { font-size: 0.88rem; color: var(--muted); margin-bottom: 12px; }
+    .save-note {
+      width: 100%; padding: 10px 14px; border: 2px solid var(--border);
+      background: white; font-family: inherit; font-size: 0.9rem;
+      color: var(--text); outline: none; resize: vertical; min-height: 72px; margin-bottom: 12px;
+    }
+    .save-note:focus { border-color: var(--accent); }
+
+    @media (max-width: 600px) {
+      .container { padding: 0 24px; margin-top: 36px; }
+      .input-row { grid-template-columns: 1fr; }
+      .page-header { flex-direction: column-reverse; }
+      .page-char { width: 80px; align-self: flex-end; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="logo">酵种问诊日记</a>
+    <img src="assets/images/char-group.png" alt="" class="nav-center" style="height:28px;">
+    <div class="nav-right">
+      <a href="diary.html" class="nav-link">我的日记</a>
+      <button class="nav-auth" id="navAuthBtn" onclick="openLogin()">登录</button>
+    </div>
+    <button class="nav-hamburger" onclick="openMobileMenu()"><span></span><span></span><span></span></button>
+  </nav>
+  <div class="nav-mobile-menu" id="mobileMenu">
+    <button class="nav-mobile-close" onclick="closeMobileMenu()">✕</button>
+    <a href="diary.html" class="nav-link" onclick="closeMobileMenu()">我的日记</a>
+    <button class="nav-auth" id="navAuthBtnMobile" onclick="openLogin()" style="margin-left:0;">登录</button>
+  </div>
+  <div class="login-overlay" id="loginOverlay" onclick="handleOverlayClick(event)">
+    <div class="login-box">
+      <h2>开始记录</h2>
+      <p>填手机号或邮箱，你的问诊记录会自动存档。</p>
+      <input type="text" id="loginInput" placeholder="手机号 / 邮箱" />
+      <button class="btn-primary" onclick="doLogin()">继续 →</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="page-header">
+      <div class="page-header-text">
+        <div class="section-label">问诊</div>
+        <h1>告诉我它怎么了。</h1>
+        <p>描述你观察到的，我来帮你读懂。</p>
+      </div>
+      <img class="page-char" src="assets/images/char-starter-chef.png" alt="" />
+    </div>
+
+    <div class="clinic-step">
+      <div class="step-title">第一步 — 你的酵种现在处于哪个阶段？</div>
+      <div class="radio-group">
+        <label class="radio-option"><input type="radio" name="stage" value="early-new" /> 第1-3天 — 刚混合，还没有丢弃过</label>
+        <label class="radio-option"><input type="radio" name="stage" value="early-building" /> 第4-10天 — 每天丢弃 + 喂食中</label>
+        <label class="radio-option"><input type="radio" name="stage" value="stable" /> 成熟酵种 — 规律喂食中</label>
+        <label class="radio-option"><input type="radio" name="stage" value="fridge" /> 刚从冰箱里取出来</label>
+      </div>
+    </div>
+
+    <div class="clinic-step">
+      <div class="step-title">第二步 — 你的喂食方式</div>
+      <div class="form-group">
+        <label>粉类</label>
+        <input type="text" name="flour" placeholder="例如：高筋粉、全麦粉、各一半混合" />
+        <p class="field-hint">不同面粉发酵速度不同，全麦粉通常更快。</p>
+      </div>
+      <div class="input-row">
+        <div class="form-group">
+          <label>喂食比例</label>
+          <input type="text" name="ratio" id="ratioInput" placeholder="例如 1:2:2" />
+          <p class="field-hint">酵种 : 面粉 : 水 — 点击快速填入：</p>
+          <div class="ratio-examples">
+            <span class="ratio-chip" onclick="setRatio('1:1:1')">1:1:1</span>
+            <span class="ratio-chip" onclick="setRatio('1:2:2')">1:2:2</span>
+            <span class="ratio-chip" onclick="setRatio('1:3:3')">1:3:3</span>
+            <span class="ratio-chip" onclick="setRatio('1:5:5')">1:5:5</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>距上次喂食（小时）</label>
+          <input type="number" name="hours" placeholder="例如 8" min="0" max="168" />
+          <p class="field-hint">大概就行。</p>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>室温（°C）</label>
+        <input type="number" id="tempInput" name="temp" placeholder="例如 24" min="-20" max="60" style="max-width:200px;" />
+        <p class="field-hint">温度是影响酵种节奏最关键的因素。</p>
+      </div>
+    </div>
+
+    <div class="clinic-step">
+      <div class="step-title">第三步 — 你现在观察到什么？</div>
+      <div class="form-group">
+        <label>涨了多少？</label>
+        <select name="rise">
+          <option value="">— 请选择 —</option>
+          <option value="none">几乎没动</option>
+          <option value="small">涨了一点（不到50%）</option>
+          <option value="double">大约翻倍</option>
+          <option value="more">超过翻倍</option>
+          <option value="collapsed">已经到顶，又塌下来了</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>现在处于哪个阶段？</label>
+        <select name="trend">
+          <option value="">— 请选择 —</option>
+          <option value="rising">还在上涨</option>
+          <option value="peak">在顶峰——圆顶，有很多气泡</option>
+          <option value="falling">开始回落</option>
+          <option value="flat">完全平静，没有动静</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>闻起来是什么味道？</label>
+        <select name="smell">
+          <option value="">— 请选择 —</option>
+          <option value="mild">微酸，轻微的酸味</option>
+          <option value="yogurt">酸奶或奶油奶酪味</option>
+          <option value="alcohol">酒精味、指甲油味</option>
+          <option value="cheese">浓烈的奶酪味</option>
+          <option value="none">几乎没有气味</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="runDiagnosis()">诊断我的酵种 →</button>
+
+    <div class="clinic-output" id="clinicOutput">
+      <div class="output-emoji" id="outEmoji"></div>
+      <div class="output-title">诊断结果</div>
+      <div class="output-row">
+        <span class="output-label">活性</span>
+        <span class="output-value" id="outActivity">—</span>
+      </div>
+      <div class="output-row">
+        <span class="output-label">当前状态</span>
+        <span class="output-value" id="outState">—</span>
+      </div>
+      <div class="output-advice" id="outAdvice"></div>
+      <div class="output-next" id="outNext" style="display:none;">
+        <strong>接下来怎么做</strong>
+        <span id="outNextText"></span>
+      </div>
+
+      <div class="save-row">
+        <p>加一条今天的备注（可选）</p>
+        <textarea class="save-note" id="saveNote" placeholder="比如：今天换了新粉，室温比平时低…"></textarea>
+        <button class="btn-primary" onclick="saveRecord_()">存入日记 →</button>
+        <p id="saveConfirm" style="display:none; margin-top:10px; font-size:0.85rem; color:var(--accent);">已存档 ✓ <a href="diary.html" style="color:var(--accent); text-decoration:underline;">查看日记</a></p>
+      </div>
+    </div>
+  </div>
+
+  <footer>酵种问诊日记 — 用最直白的话，读懂你的酵种</footer>
+
+  <div class="contact-bar">
+    <span>联系我们</span>
+    <a class="contact-icon" title="小红书" href="#" target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <rect x="3" y="3" width="18" height="18" rx="4"/>
+        <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none"/>
+        <path d="M8 12h8M12 8v8"/>
+      </svg>
+      小红书
+    </a>
+    <a class="contact-icon" title="微信" href="#" target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M9 11.5c3.5 0 6.5-2 6.5-4.5S12.5 2.5 9 2.5 2.5 4.5 2.5 7c0 1.4.8 2.7 2 3.5L3.5 13l2.8-1.2c.8.2 1.7.3 2.7.3z"/>
+        <path d="M15 13.5c2.8 0 5 1.6 5 3.5 0 1-.6 2-1.6 2.7l.6 2-2.2-1c-.6.1-1.2.2-1.8.2-2.8 0-5-1.6-5-3.5s2.2-3.5 5-3.5z"/>
+      </svg>
+      微信
+    </a>
+  </div>
+
+  <script src="supabase.js"></script>
+  <script>
+    const AUTH_KEY = 'sc_user_contact';
+    const USER_ID_KEY = 'sc_user_id';
+    function getContact() { return localStorage.getItem(AUTH_KEY); }
+    function getUserId() { return localStorage.getItem(USER_ID_KEY); }
+
+    function updateNav() {
+      const c = getContact();
+      ['navAuthBtn','navAuthBtnMobile'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        if (c) { btn.textContent = c.length > 10 ? c.slice(0,10)+'…' : c; btn.classList.add('logged-in'); }
+        else { btn.textContent = '登录'; btn.classList.remove('logged-in'); }
+      });
+    }
+    function openLogin() {
+      const c = getContact();
+      if (c && confirm(`退出登录（${c}）？`)) { localStorage.removeItem(AUTH_KEY); localStorage.removeItem(USER_ID_KEY); updateNav(); return; }
+      if (!c) document.getElementById('loginOverlay').classList.add('open');
+    }
+    function handleOverlayClick(e) { if (e.target === document.getElementById('loginOverlay')) document.getElementById('loginOverlay').classList.remove('open'); }
+    async function doLogin() {
+      const val = document.getElementById('loginInput').value.trim();
+      if (!val) { alert('请填写手机号或邮箱'); return; }
+      const uid = await getOrCreateUser(val);
+      localStorage.setItem(AUTH_KEY, val); localStorage.setItem(USER_ID_KEY, uid);
+      document.getElementById('loginOverlay').classList.remove('open');
+      updateNav();
+    }
+    updateNav();
+    function openMobileMenu() { document.getElementById('mobileMenu').classList.add('open'); }
+    function closeMobileMenu() { document.getElementById('mobileMenu').classList.remove('open'); }
+    function setRatio(val) { document.getElementById('ratioInput').value = val; }
+
+    const EMOJI_MAP = {
+      peak: '🌟', rising: '📈', falling: '😴', flat: '😶',
+      good: '✅', low: '⚠️', weak: '😬', past: '🌙', na: '🐣'
+    };
+
+    let _lastDiagnosis = null;
+
+    function runDiagnosis() {
+      const stage = document.querySelector('input[name="stage"]:checked')?.value;
+      const rise  = document.querySelector('select[name="rise"]').value;
+      const trend = document.querySelector('select[name="trend"]').value;
+      const smell = document.querySelector('select[name="smell"]').value;
+      const temp  = parseFloat(document.getElementById('tempInput').value) || 22;
+      const hours = parseFloat(document.querySelector('input[name="hours"]').value) || 0;
+      const ratio = document.querySelector('input[name="ratio"]').value.trim();
+      const flour = document.querySelector('input[name="flour"]').value.trim();
+
+      if (!stage || !rise || !trend || !smell) { alert('请先完成三个步骤，再进行诊断。'); return; }
+
+      let ratioMultiplier = 2;
+      const rp = ratio.split(':').map(Number);
+      if (rp.length === 3 && rp[0] > 0) ratioMultiplier = rp[1] / rp[0];
+      const thinFeed = ratioMultiplier >= 4;
+      const flourLower = flour.toLowerCase();
+      const isWholeWheat = flourLower.includes('全麦') || flourLower.includes('黑麦') || flourLower.includes('whole') || flourLower.includes('rye');
+      const isRefinedOnly = flour && !isWholeWheat;
+
+      let activity, state, advice, nextStep, emoji;
+
+      if (stage === 'early-new') {
+        activity = 'N/A（第1-3天）'; emoji = EMOJI_MAP.na;
+        state = '激活阶段——暂时不要喂食';
+        if (rise === 'more' || rise === 'double') {
+          advice = `你看到的很可能是「假涨」——不是酵母在活动，而是坏菌在消耗面粉时产生的气体。看起来很壮观，但这不代表酵种已经健康了。`;
+          nextStep = '先不要丢弃或喂食。从你初次混合算起，等满72小时再做任何操作。泡沫活动会消退——这是正常的。你现在只需要观察和等待。';
+        } else if (smell === 'alcohol' || smell === 'cheese' || smell === 'none') {
+          advice = '前三天出现奇怪的气味——奶酪味、酒精味、臭袜子味——完全正常。坏菌还没有被淘汰干净，这不是问题。';
+          nextStep = '不要喂食，不要丢弃。就这样放满72小时。如果你看到顶部有清液析出，每12-24小时搅拌一次就好。';
+        } else {
+          advice = '你的酵种正处于激活阶段。现在不该有太多动静——偶尔冒出几个小气泡是好兆头。';
+          nextStep = '从初次混合算起，满72小时之前不要喂食或丢弃。要有耐心。过早喂食是新手最常犯的错误，会把你刚开始聚集的菌群稀释掉。';
+        }
+      } else if (stage === 'early-building') {
+        emoji = EMOJI_MAP.low;
+        if (isRefinedOnly) {
+          activity = '偏弱'; state = '粉类需要调整';
+          advice = '用100%高筋粉或中筋粉来培养新酵种，失败率非常高。启动发酵的野生酵母和菌群住在麦粒的外皮上——精制面粉在磨制过程中去掉了这部分。';
+          nextStep = '换成至少50%全麦粉的混合粉。全麦提供菌群，高筋粉提供易消化的糖。前10天保持这个配比。';
+        } else if (rise === 'none' && trend === 'flat') {
+          activity = '较弱'; state = '「安静期」——正常';
+          advice = `这个阶段几乎没有动静是正常的——你正处于「安静期」，坏菌已经消退，酵母种群正在缓慢重建。这是最容易让人慌乱的时刻，很多人会在这里过度喂食，反而越喂越糟。`;
+          nextStep = '不要因为时间到了就丢弃重喂。先观察表面气泡。当你看到气泡活动比昨天明显增多，再丢弃80%，喂50g面粉+50g水（1:2:2）。如果24小时后还是没动静，搅拌一下再等12小时。';
+        } else if (rise === 'small' || trend === 'rising') {
+          activity = '偏弱'; state = '开始建立活性'; emoji = EMOJI_MAP.rising;
+          advice = '有些活动了——酵母种群开始建立。关键信号是气泡活动是否一天比一天多，而不是涨了多少。';
+          nextStep = '等酵种明显过了峰值（体积开始下降，或表面气泡开始消退）再丢弃重喂。喂太早等于扔掉了你刚养出来的80%酵母。';
+        } else if (smell === 'alcohol') {
+          activity = '过渡期'; state = '菌群平衡转变中';
+          advice = '第4-10天出现酒精味是正常的，菌群平衡正在转变中。这不一定意味着酵种饿了，可能只是在过渡期。';
+          nextStep = '先看气泡活动。如果有明显气泡且在上涨，就等过了峰值再用1:2:2喂食。如果24小时后完全没动静，可以试试1:1:1配温水（28°C）来刺激一下。';
+        } else if (rise === 'double' || rise === 'more') {
+          activity = '良好'; state = '进展不错'; emoji = EMOJI_MAP.good;
+          advice = '不错的进展——你的酵种开始展现真正的酵母活动了。';
+          nextStep = '等到明显过了峰值（体积下降或表面变平）再丢弃80%重喂，比例1:2:2。每天的峰值应该比前一天来得更快——这就是酵种在增强的信号。';
+        } else {
+          activity = '一般'; state = '正在建立中';
+          advice = '你的酵种正在建立酵母种群的过程中。';
+          nextStep = '看气泡，不要看时钟。等气泡活动比昨天多、且酵种过了峰值之后，再丢弃重喂。温度24-27°C会加速这个过程。';
+        }
+      } else if (stage === 'fridge') {
+        activity = '苏醒中'; state = '冰箱唤醒——需要1-2次喂食'; emoji = EMOJI_MAP.falling;
+        advice = '刚从冰箱出来的酵种需要1-2次温热喂食才能完全醒过来。冷藏会大幅减缓酵母活动——不要用出冰箱后几小时的状态来判断它的健康。';
+        nextStep = '现在用温水（约28°C）喂一次，放在室温（24-27°C）。等一个完整的涨落循环（通常6-12小时），再喂第二次。第二次喂食后，在它圆顶冒泡时使用。';
+      } else if (temp > 27) {
+        activity = '活跃'; state = `温度偏高（${temp}°C）`; emoji = EMOJI_MAP.low;
+        advice = `${temp}°C 偏热了。高温会加速酵母活动，但也会让产酸失控——酵种会涨得快、塌得也快，面包味道会非常酸。`;
+        nextStep = '增加喂食频率（每8-10小时喂一次）跟上快节奏的周期。喂食时用凉一点的水（约20°C）来稍微降温。避免长时间超过27°C。';
+      } else if (temp < 18) {
+        activity = '缓慢'; state = `温度偏低（${temp}°C）`; emoji = EMOJI_MAP.falling;
+        advice = `${temp}°C 有点凉，发酵会明显减慢。在23°C需要6小时达到峰值的酵种，在这个温度下可能需要10-12小时——不是变弱了，只是更凉了。`;
+        nextStep = '把它移到更暖的地方，理想温度24-27°C。峰值时间会明显缩短。调整你的烘焙计划，而不是改变喂食比例。';
+      } else if (smell === 'alcohol') {
+        activity = '饥饿'; state = '食物耗尽'; emoji = EMOJI_MAP.weak;
+        advice = '成熟酵种出现丙酮或酒精味，说明培养基的食物已经耗尽了。与新酵种不同，这是成熟菌群真实的饥饿信号。';
+        nextStep = thinFeed
+          ? `你已经在用 ${ratio || '1:4:4+'} 了——比例没问题。问题是频率。试试每12小时喂一次，连续2-3个周期，直到气味消散。`
+          : `接下来2-3次喂食把比例提高到1:3:3或1:4:4，每12小时喂一次。多给一些面粉，让酵母有更长的运转时间。`;
+      } else if ((rise === 'double' || rise === 'more') && trend === 'peak') {
+        activity = '良好'; state = '在峰值——最佳使用时机'; emoji = EMOJI_MAP.peak;
+        advice = '你的酵种看起来准备好了。标准就绪检验：在23°C用1:2:2喂食后4-7小时内翻倍，连续三天。';
+        nextStep = '今天烘焙的话现在就用。如果不烘焙，放冰箱——可以保存一周。下次烘焙前喂一次，等它再次到顶峰。';
+      } else if ((rise === 'double' || rise === 'more') && trend === 'falling') {
+        activity = '良好'; state = '已过峰值——尽快喂食'; emoji = EMOJI_MAP.falling;
+        advice = '你的酵种已经过了峰值，但还能用。';
+        nextStep = '如果几小时内就要烘焙，直接用——面包会稍微酸一点。否则现在喂食1:2:2，或者放冰箱。';
+      } else if ((rise === 'double' || rise === 'more') && trend === 'rising') {
+        activity = '良好'; state = '还在上涨'; emoji = EMOJI_MAP.rising;
+        advice = '状态不错——还在往上走。';
+        nextStep = '等它出现圆顶、大量气泡、刚开始回落再用。1-2小时后再来看。';
+      } else if (smell === 'cheese') {
+        activity = '偏酸'; state = '乙酸菌偏多'; emoji = EMOJI_MAP.weak;
+        advice = '成熟酵种出现浓烈奶酪味，通常说明乙酸菌占主导——常见原因是低水化、低温或喂食不够频繁。';
+        nextStep = '试试稍微高一点的水量（1:2:2.5），移到更暖的地方（24-26°C）。坚持每24小时喂一次，连续3-5天让菌群重新平衡。';
+      } else if (rise === 'none' && hours > 16) {
+        activity = '较弱'; state = `${hours}小时无动静`; emoji = EMOJI_MAP.weak;
+        advice = `在 ${temp}°C 下，超过 ${hours} 小时几乎没有动静，说明菌群偏弱，或者上次喂食比例太稀。`;
+        nextStep = `用温水（28°C）做一次1:1:1的集中喂食来刺激。等气泡活动恢复后，再回到 ${ratio || '1:2:2'} 正常喂食。`;
+      } else {
+        activity = '偏弱'; state = '需要关注'; emoji = EMOJI_MAP.weak;
+        advice = '在这些条件下，活性低于预期。';
+        nextStep = '用温水（28°C）按1:2:2喂食。确保罐子干净，没有干皮混入。8小时后检查气泡。';
+      }
+
+      document.getElementById('outEmoji').textContent = emoji;
+      document.getElementById('outActivity').textContent = activity;
+      document.getElementById('outState').textContent = state;
+      document.getElementById('outAdvice').textContent = advice;
+      document.getElementById('outNextText').textContent = nextStep;
+      document.getElementById('outNext').style.display = 'block';
+      document.getElementById('saveConfirm').style.display = 'none';
+
+      _lastDiagnosis = { stage, flour, ratio, temp, hours, rise, trend, smell, activity, state, advice, next_step: nextStep, emoji };
+
+      const out = document.getElementById('clinicOutput');
+      out.style.display = 'block';
+      out.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    async function saveRecord_() {
+      if (!_lastDiagnosis) return;
+      let uid = getUserId();
+      if (!uid) {
+        document.getElementById('loginOverlay').classList.add('open');
+        return;
+      }
+      const note = document.getElementById('saveNote').value.trim();
+      await saveRecord(uid, { ..._lastDiagnosis, note });
+      document.getElementById('saveConfirm').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
