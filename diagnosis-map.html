@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>诊断答案全览</title>
+  <style>
+    @font-face {
+      font-family: 'Cubic 11';
+      src: url('https://cdn.jsdelivr.net/gh/ACh-K/Cubic-11@main/fonts/web/Cubic_11.woff2') format('woff2');
+    }
+    :root { --bg:#f5ede0; --text:#3b2314; --muted:#9a7a5a; --accent:#8b4c1e; --border:#d9c4a8; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif; background: var(--bg); color: var(--text); padding: 48px 40px 80px; }
+
+    h1 { font-family: 'Cubic 11', monospace; font-size: 1.2rem; color: var(--accent); margin-bottom: 8px; }
+    .subtitle { font-size: 0.88rem; color: var(--muted); margin-bottom: 40px; }
+
+    .stage-block { margin-bottom: 48px; }
+    .stage-title {
+      font-family: 'Cubic 11', monospace; font-size: 0.85rem;
+      color: var(--accent); letter-spacing: 0.06em;
+      border-bottom: 2px solid var(--accent); padding-bottom: 8px; margin-bottom: 16px;
+    }
+
+    .case {
+      display: grid; grid-template-columns: 52px 1fr;
+      margin-bottom: 12px;
+      border: 1.5px solid var(--border); background: white;
+    }
+    .case-emoji {
+      font-size: 1.6rem; display: flex; align-items: flex-start;
+      justify-content: center; padding: 16px 0 0;
+      border-right: 1.5px solid var(--border); background: #fdf8f2;
+    }
+    .case-body { padding: 14px 16px; }
+    .case-trigger { font-size: 0.75rem; color: var(--muted); margin-bottom: 6px; font-style: italic; }
+    .case-activity { font-family: 'Cubic 11', monospace; font-size: 0.72rem; color: var(--accent); margin-bottom: 10px; }
+    .case-label { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.06em; margin-bottom: 4px; }
+    .case-advice {
+      font-size: 0.88rem; line-height: 1.7; color: var(--text);
+      padding: 10px 12px; background: var(--bg); border-left: 3px solid var(--accent);
+      margin-bottom: 8px;
+    }
+    .case-next {
+      font-size: 0.85rem; line-height: 1.7; color: white;
+      padding: 10px 12px; background: var(--accent);
+    }
+
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      margin-bottom: 40px; padding: 16px 20px;
+      border: 1.5px solid var(--border); background: white;
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.83rem; color: var(--muted); }
+    .legend-emoji { font-size: 1.2rem; }
+  </style>
+</head>
+<body>
+
+<h1>诊断答案全览</h1>
+<p class="subtitle">共 20 种情况 · 8 种表情</p>
+
+<div class="legend">
+  <div class="legend-item"><span class="legend-emoji">🐣</span> 激活期，暂不评估</div>
+  <div class="legend-item"><span class="legend-emoji">✅</span> 状态良好</div>
+  <div class="legend-item"><span class="legend-emoji">🌟</span> 在峰值，最佳时机</div>
+  <div class="legend-item"><span class="legend-emoji">📈</span> 上涨 / 建立中</div>
+  <div class="legend-item"><span class="legend-emoji">🌙</span> 已过峰值 / 冰箱唤醒</div>
+  <div class="legend-item"><span class="legend-emoji">😶</span> 完全平静 / 无动静</div>
+  <div class="legend-item"><span class="legend-emoji">⚠️</span> 需要调整</div>
+  <div class="legend-item"><span class="legend-emoji">😬</span> 有问题信号</div>
+</div>
+
+<!-- 第1-3天 -->
+<div class="stage-block">
+  <div class="stage-title">第1-3天 — 激活期</div>
+
+  <div class="case">
+    <div class="case-emoji">🐣</div>
+    <div class="case-body">
+      <div class="case-trigger">触发：涨了很多 / 超过翻倍</div>
+      <div class="case-activity">活性暂不适用 · 激活阶段——暂时不要喂食</div>
+      <div class="case-label">我读到的</div>
+      <div class="case-advice">你看到的很可能是「假涨」——不是酵母在活动，而是坏菌在消耗面粉时产生的气体。看起来很壮观，但这不代表酵种已经健康了。</div>
+      <div class="case-label">建议你做的</div>
+      <div class="case-next">先不要丢弃或喂食。从你初次混合算起，等满72小时再做任何操作。泡沫活动会消退——这是正常的。你现在只需要观察和等待。</div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-emoji">🐣</div>
+    <div class="case-body">
+      <div class="case-trigger">触发：有酒精味 / 奶酪味 / 几乎没气味</div>
+      <div class="case-activity">活性暂不适用 · 激活阶段——暂时不要喂食</div>
+      <div class="case-label">我读到的</div>
+      <div class="case-advice">前三天出现奇怪的气味——奶酪味、酒精味、臭袜子味——完全正常。坏菌还没有被淘汰干净，这不是问题。</div>
+      <div class="case-label">建议你做的</div>
+      <div class="case-next">不要喂食，不要丢弃。就这样放满72小时。如果你看到顶部有清液析出，每12-24小时搅拌一次就好。</div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-emoji">🐣</div>
+    <div class="case-body">
+      <div class="case-trigger">触发：其他正常状态</div>
+      <div class="case-activity">活性暂不适用 · 激活阶段——暂时不要喂食</div>
+      <div class="case-label">我读到的</div>
+      <div class="case-advice">你的酵种正处于激活阶段。现在不该有太多动静——偶尔冒出几个小气泡是好兆头。</div>
+      <div class="case-label">建议你做的</div>
+      <div class="case-next">从初次混合算起，满72小时之前不要喂食或丢弃。要有耐心。过早喂食是新手最常犯的错误，会把你刚开始聚集的菌群稀释掉。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 第4-10天 -->
+<div class="stage-block">
+  <div class="stage-title">第4-10天 — 建立期</div>
+
+  <div class="case">
+    <div class="case-emoji">⚠️</div>
+    <div class="case-body">
+      <div class="case-trigger">触发：只用了高筋粉 / 中筋粉（纯精制粉）</div>
+      <div class="case-activity">活性偏弱 · 粉类需要调整</div>
+      <div class="case-label">我读到的</div>
+      <div class="case-advice">用100%高筋粉或中筋粉来培养新酵种，失败率非常高。启动发酵的野生酵母和菌群住在麦粒的外皮上——精制面粉在磨制过程中去掉了这部分。</div>
+      <div class="case-label">建议你做的</div>
+      <div class="case-next">换成至少50%全麦粉的混合粉。全麦提供菌群，高筋粉提供易消化的糖。前10天保持这个配比。</div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-emoji">😶</div>
+    <div class="case-body">
+      <div class="case-trigger">触发：几乎没动 + 完全平静</div>
+      <div class="case-activity">活性较弱 · 「安静期」——正常</div>
+      <div class="case-label">我读到的</div>
+      <div class="case-advice">这个阶段几乎没有动静是正常的——你正处于「安静期」，坏菌已经消退，酵母种群正在缓慢重建。这是最容易让人慌乱的时刻，很多人会在这里过度喂食，反而越喂越糟。</div>
+      <div class="case-label">建议你做的</div>
+      <div class="case-next">不要因为时间到了就丢弃重喂。先观察表面气泡。当你看到气泡活动比昨天明显增多，再丢弃80%，喂50g面粉+50g水（1:2:2）。如果24小时后还是没动静，搅拌一下再等12小时。</div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-emoji">📈</div>
+    <div class="case-body">
+      <div class="case-trigger">触发：涨了一点 / 还在上涨</div>
+      <div class="case-activity">活性偏弱 · 开始建立活性</div>
+      <div class="case-label">我读到的</div>
+      <div class="case-advice">有些活动了——酵母种群开始建立。关键信号是气泡活动是否一天比一天多，而不是涨了多少。</div>
+      <div class="case-label">建议你做的</div>
+      <div class="case-next">等酵种明显过了峰值（体积开始下降，或表面气泡开始消退）再丢弃重喂。喂太早等于扔掉了你刚养出来的80%酵母。</div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-emoji">😶</div>
+    <div class="case-body">
+      <div class="case-trigger">触发：有酒精味</div>
+      <div class="case-activity">活性过渡期 · 菌群平衡转变中</div>
+      <div class="case-label">我读到的</div>
+      <div class="case-advice">第4-10天出现酒精味是正常的，菌群平衡正在转变中。这不一定意味着酵种饿了，可能只是在过渡期。</div>
+      <div class="case-label">建议你做的</div>
+      <div class="case-next">先看气泡活动。如果有明显气泡且在上涨，就等过了峰值再用1:2:2喂食。如果24小时后完全没动静，可以试试1:1:1配温水（28°C）来刺激一下。</div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-emoji">✅</div>
+    <div class="case-body">
+      <div class="case-trigger">触发：翻倍或超过翻倍</div>
+      <div class="case-activity">活性良好 · 进展不错</div>
+      <div class="case-label">我读到的</div>
+      <div class="case-advice">不错的进展——你的酵种开始展现真正的酵母活动了。</div>
+      <div class="case-label">建议你做的</div>
+      <div class="case-next">等到明显过了峰值（体积下降或表面变平）再丢弃80%重喂，比例1:2:2。每天的峰值应该比前一天来得更快——这就是酵种在增强的信号。</div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-emoji">⚠️</div>
+    <div class="case-body">
+      <div class="case-trigger">触发：其他情况（兜底）</div>
+      <div class="case-activity">活性一般 · 正在建立中</div>
+      <div class="case-label">我读到的</div>
+      <div class="case-advice">你的酵种正在建立酵母种群的过程中。</div>
+      <div class="case-label">建议你做的</div>
+      <div class="case-next">看气泡，不要看时钟。等气泡活动比昨天多、且酵种过了峰值之后，再丢弃重喂。温度24-27°C会加速这个过程。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 冰箱唤醒 -->
+<div class="stage-block">
+  <div class="stage-title">刚从冰箱取出</div>
+
+  <div class="case">
+    <div class="case-emoji">🌙</div>
+    <div class="case-body">
+      <div class="case-trigger">触发：选择了「刚从冰箱里取出来」</div>
+      <div class="case-activity">活性苏醒中 · 冰箱唤醒——需要1-2次喂食</div>
+      <div class="case-label">我读到的</div>
+      <div class="case-advice">刚从冰箱出来的酵种需要1-2次温热喂食才能完全醒过来。冷藏会大幅减缓酵母活动——不要用出冰箱后几小时的状态来判断它的健康。</div>
+      <div class="case-label">建议你做的</div>
+      <div class="case-next">现在用温水（约28°C）喂一次，放在室温（24-27°C）。等一个完整的涨落循环（通常6-12小时），再喂第二次。第二次喂食后，在它圆顶冒泡时使用。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 成熟酵种 -->
+<div class="stage-block">
+  <div class="stage-title">成熟酵种 — 规律喂食中</div>
+
+  <div class="case">
+    <div class="case-emoji">⚠️</div>
+    <div class="case-body">
+      <div class="case-trigger">触发：室温 &gt; 27°C</div>
+      <div class="case-activity">活性活跃 · 温度偏高</div>
+      <div class="case-label">我读到的</div>
+      <div class="case-advice">温度偏热了。高温会加速酵母活动，但也会让产酸失控——酵种会涨得快、塌得也快，面包味道会非常酸。</div>
+      <div class="case-label">建议你做的</div>
+      <div class="case-next">增加喂食频率（每8-10小时喂一次）跟上快节奏的周期。喂食时用凉一点的水（约20°C）来稍微降温。避免长时间超过27°C。</div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-emoji">😬</div>
+    <div class="case-body">
+      <div class="case-trigger">触发：室温 &lt; 18°C</div>
+      <div class="case-activity">活性缓慢 · 温度偏低</div>
+      <div class="case-label">我读到的</div>
+      <div class="case-advice">温度有点凉，发酵会明显减慢。在23°C需要6小时达到峰值的酵种，在这个温度下可能需要10-12小时——不是变弱了，只是更凉了。</div>
+      <div class="case-label">建议你做的</div>
+      <div class="case-next">把它移到更暖的地方，理想温度24-27°C。峰值时间会明显缩短。调整你的烘焙计划，而不是改变喂食比例。</div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-emoji">😬</div>
+    <div class="case-body">
+      <div class="case-trigger">触发：有酒精味 + 比例已经够稀（≥1:4:4）</div>
+      <div class="case-activity">活性饥饿 · 食物耗尽</div>
+      <div class="case-label">我读到的</div>
+      <div class="case-advice">成熟酵种出现丙酮或酒精味，说明培养基的食物已经耗尽了。与新酵种不同，这是成熟菌群真实的饥饿信号。</div>
+      <div class="case-label">建议你做的</div>
+      <div class="case-next">你已经在用1:4:4+了——比例没问题。问题是频率。试试每12小时喂一次，连续2-3个周期，直到气味消散。</div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-emoji">😬</div>
+    <div class="case-body">
+      <div class="case-trigger">触发：有酒精味 + 比例不够稀（&lt;1:4:4）</div>
+      <div class="case-activity">活性饥饿 · 食物耗尽</div>
+      <div class="case-label">我读到的</div>
+      <div class="case-advice">成熟酵种出现丙酮或酒精味，说明培养基的食物已经耗尽了。与新酵种不同，这是成熟菌群真实的饥饿信号。</div>
+      <div class="case-label">建议你做的</div>
+      <div class="case-next">接下来2-3次喂食把比例提高到1:3:3或1:4:4，每12小时喂一次。多给一些面粉，让酵母有更长的运转时间。</div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-emoji">🌟</div>
+    <div class="case-body">
+      <div class="case-trigger">触发：翻倍或以上 + 在顶峰</div>
+      <div class="case-activity">活性良好 · 在峰值——最佳使用时机</div>
+      <div class="case-label">我读到的</div>
+      <div class="case-advice">你的酵种看起来准备好了。标准就绪检验：在23°C用1:2:2喂食后4-7小时内翻倍，连续三天。</div>
+      <div class="case-label">建议你做的</div>
+      <div class="case-next">今天烘焙的话现在就用。如果不烘焙，放冰箱——可以保存一周。下次烘焙前喂一次，等它再次到顶峰。</div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-emoji">🌙</div>
+    <div class="case-body">
+      <div class="case-trigger">触发：翻倍或以上 + 开始回落</div>
+      <div class="case-activity">活性良好 · 已过峰值——尽快喂食</div>
+      <div class="case-label">我读到的</div>
+      <div class="case-advice">你的酵种已经过了峰值，但还能用。</div>
+      <div class="case-label">建议你做的</div>
+      <div class="case-next">如果几小时内就要烘焙，直接用——面包会稍微酸一点。否则现在喂食1:2:2，或者放冰箱。</div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-emoji">📈</div>
+    <div class="case-body">
+      <div class="case-trigger">触发：翻倍或以上 + 还在上涨</div>
+      <div class="case-activity">活性良好 · 还在上涨</div>
+      <div class="case-label">我读到的</div>
+      <div class="case-advice">状态不错——还在往上走。</div>
+      <div class="case-label">建议你做的</div>
+      <div class="case-next">等它出现圆顶、大量气泡、刚开始回落再用。1-2小时后再来看。</div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-emoji">😬</div>
+    <div class="case-body">
+      <div class="case-trigger">触发：有浓烈奶酪味</div>
+      <div class="case-activity">活性偏酸 · 乙酸菌偏多</div>
+      <div class="case-label">我读到的</div>
+      <div class="case-advice">成熟酵种出现浓烈奶酪味，通常说明乙酸菌占主导——常见原因是低水化、低温或喂食不够频繁。</div>
+      <div class="case-label">建议你做的</div>
+      <div class="case-next">试试稍微高一点的水量（1:2:2.5），移到更暖的地方（24-26°C）。坚持每24小时喂一次，连续3-5天让菌群重新平衡。</div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-emoji">😶</div>
+    <div class="case-body">
+      <div class="case-trigger">触发：几乎没动 + 超过16小时</div>
+      <div class="case-activity">活性较弱 · 长时间无动静</div>
+      <div class="case-label">我读到的</div>
+      <div class="case-advice">在当前温度下超过16小时几乎没有动静，说明菌群偏弱，或者上次喂食比例太稀。</div>
+      <div class="case-label">建议你做的</div>
+      <div class="case-next">用温水（28°C）做一次1:1:1的集中喂食来刺激。等气泡活动恢复后，再回到正常比例喂食。</div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-emoji">😶</div>
+    <div class="case-body">
+      <div class="case-trigger">触发：其他情况（兜底）</div>
+      <div class="case-activity">活性偏弱 · 需要关注</div>
+      <div class="case-label">我读到的</div>
+      <div class="case-advice">在这些条件下，活性低于预期。</div>
+      <div class="case-label">建议你做的</div>
+      <div class="case-next">用温水（28°C）按1:2:2喂食。确保罐子干净，没有干皮混入。8小时后检查气泡。</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
