@@ -136,8 +136,48 @@ select {
   display: flex; align-items: center; gap: 6px;
   font-size: 0.82rem; color: var(--muted); transition: color 0.2s; cursor: pointer;
 }
+.contact-question {
+  border: none; background: none; padding: 0; font-family: inherit;
+}
 .contact-icon:hover { color: var(--accent); }
 .contact-icon svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+.question-popover {
+  display: none; position: fixed; right: 24px; bottom: 64px;
+  width: min(340px, calc(100vw - 32px)); z-index: 120;
+  background: white; border: 2px solid var(--accent);
+  box-shadow: 0 10px 26px rgba(59,35,20,0.16);
+  padding: 20px;
+}
+.question-popover.open { display: block; }
+.question-popover h2 {
+  font-family: 'Cubic 11', monospace; font-size: 0.95rem;
+  color: var(--accent); margin-bottom: 8px; line-height: 1.6;
+}
+.question-popover p {
+  font-size: 0.82rem; color: var(--muted); line-height: 1.6; margin-bottom: 12px;
+}
+.question-popover textarea {
+  width: 100%; min-height: 108px; resize: vertical;
+  padding: 12px 14px; border: 2px solid var(--border);
+  background: var(--bg); font-family: inherit; font-size: 0.9rem;
+  color: var(--text); outline: none; margin-bottom: 12px;
+}
+.question-popover textarea:focus { border-color: var(--accent); }
+.question-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.question-actions .btn-primary,
+.question-actions .btn-outline {
+  width: 100%; padding: 10px 12px; font-size: 0.86rem; text-align: center;
+}
+.question-close {
+  position: absolute; top: 10px; right: 12px;
+  border: none; background: none; color: var(--muted);
+  font-size: 1.25rem; cursor: pointer; line-height: 1;
+}
+.question-status {
+  display: none; margin-top: 10px; font-size: 0.78rem; color: var(--accent);
+}
+.question-status.show { display: block; }
 
 /* ── footer ── */
 footer {
@@ -171,6 +211,12 @@ footer {
   .contact-bar > span { display: none; }
   .contact-icon { font-size: 0; gap: 0; }
   .contact-icon svg { width: 22px; height: 22px; }
+  .contact-question { font-size: 0; }
+  .question-popover {
+    left: 16px; right: 16px; bottom: 64px;
+    width: auto; padding: 18px;
+  }
+  .question-actions { grid-template-columns: 1fr; }
 
   /* footer */
   footer { padding: 20px 20px 72px; }
