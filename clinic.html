@@ -65,9 +65,16 @@
     @media (max-width: 600px) {
       .container { padding: 0 16px; margin-top: 28px; margin-bottom: 120px; }
       .input-row { grid-template-columns: 1fr; }
-      .page-header { flex-direction: column-reverse; gap: 12px; margin-bottom: 24px; }
-      .page-header h1 { font-size: 1.4rem; }
-      .page-char { width: 72px; align-self: flex-end; }
+      .page-header {
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .page-header-text { min-width: 0; }
+      .page-header .section-label { margin-bottom: 8px; }
+      .page-header h1 { font-size: 1.35rem; line-height: 1.45; margin-bottom: 6px; }
+      .page-header p { font-size: 0.95rem; line-height: 1.55; }
+      .page-char { width: 76px; align-self: center; }
       .clinic-step { padding: 20px 16px; }
       .clinic-output { padding: 20px 16px; }
       .output-next, .output-advice { padding: 14px 16px; font-size: 0.9rem; }
