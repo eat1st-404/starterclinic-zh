@@ -257,6 +257,7 @@
   <script>
     const AUTH_KEY = 'sc_user_contact';
     const USER_ID_KEY = 'sc_user_id';
+    const FEISHU_REPORT_WEBHOOK = 'https://open.feishu.cn/open-apis/bot/v2/hook/6d8d3b64-d345-4f6f-b68d-111e78658900';
     function getContact() { return localStorage.getItem(AUTH_KEY); }
     function getUserId() { return localStorage.getItem(USER_ID_KEY); }
 
@@ -287,6 +288,39 @@
     function openMobileMenu() { document.getElementById('mobileMenu').classList.add('open'); }
     function closeMobileMenu() { document.getElementById('mobileMenu').classList.remove('open'); }
     function setRatio(val) { document.getElementById('ratioInput').value = val; }
+
+    function notifyDiagnosisReport(diagnosis) {
+      const contact = getContact() || '未登录';
+      const starterName = localStorage.getItem('sc_starter_name') || '酵种';
+      const text = [
+        '新的问诊报告',
+        `用户：${contact}`,
+        `酵种名：${starterName}`,
+        `页面：${location.href}`,
+        '',
+        `阶段：${diagnosis.stage}`,
+        `粉类：${diagnosis.flour || '未填写'}`,
+        `比例：${diagnosis.ratio || '未填写'}`,
+        `温度：${diagnosis.temp}°C`,
+        `观察时长：${diagnosis.hours}小时`,
+        `涨幅：${diagnosis.rise}`,
+        `趋势：${diagnosis.trend}`,
+        `气味：${diagnosis.smell}`,
+        '',
+        `活性评估：${diagnosis.activity}`,
+        `当前状态：${diagnosis.state}`,
+        `建议：${diagnosis.next_step}`,
+      ].join('\n');
+
+      fetch(FEISHU_REPORT_WEBHOOK, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify({
+          msg_type: 'text',
+          content: { text },
+        }),
+      }).catch(function () {});
+    }
 
     const EMOJI_MAP = {
       peak: '🌟', rising: '📈', falling: '😴', flat: '😶',
@@ -411,6 +445,7 @@
       document.getElementById('saveConfirm').style.display = 'none';
 
       _lastDiagnosis = { stage, flour, ratio, temp, hours, rise, trend, smell, activity, state, advice, next_step: nextStep, emoji };
+      notifyDiagnosisReport(_lastDiagnosis);
 
       const out = document.getElementById('clinicOutput');
       out.style.display = 'block';
