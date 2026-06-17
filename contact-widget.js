@@ -9,9 +9,9 @@
     popover.setAttribute('aria-labelledby', 'questionTitle');
     popover.innerHTML = `
       <button class="question-close" type="button" aria-label="关闭">×</button>
-      <h2 id="questionTitle">提一个酵种问题</h2>
+      <h2 id="questionTitle">提一个问题或建议</h2>
       <form class="question-form">
-        <textarea id="questionText" placeholder="写下你的问题，比如：第5天，1:2:2喂养，25度，8小时只涨了30%，正常吗？" required></textarea>
+        <textarea id="questionText" placeholder="可以问酵种养护，也可以写网站改进建议。" required></textarea>
         <button class="btn-primary question-send" type="submit">发送</button>
       </form>
       <div class="question-status" aria-live="polite"></div>
@@ -57,7 +57,7 @@
       const contact = localStorage.getItem('sc_user_contact') || '未登录';
       const starterName = localStorage.getItem('sc_starter_name') || '酵种';
       const text = [
-        '新的酵种问题',
+        '新的问题或建议',
         `用户：${contact}`,
         `酵种名：${starterName}`,
         `页面：${location.href}`,
