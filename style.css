@@ -152,22 +152,20 @@ select {
 .question-popover.open { display: block; }
 .question-popover h2 {
   font-family: 'Cubic 11', monospace; font-size: 0.95rem;
-  color: var(--accent); margin-bottom: 8px; line-height: 1.6;
-}
-.question-popover p {
-  font-size: 0.82rem; color: var(--muted); line-height: 1.6; margin-bottom: 12px;
+  color: var(--accent); margin-bottom: 14px; line-height: 1.6;
 }
 .question-popover textarea {
   width: 100%; min-height: 108px; resize: vertical;
-  padding: 12px 14px; border: 2px solid var(--border);
-  background: var(--bg); font-family: inherit; font-size: 0.9rem;
+  padding: 12px 14px; border: 2px solid var(--accent);
+  background: white; font-family: inherit; font-size: 0.9rem;
   color: var(--text); outline: none; margin-bottom: 12px;
 }
 .question-popover textarea:focus { border-color: var(--accent); }
-.question-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.question-actions .btn-primary,
-.question-actions .btn-outline {
-  width: 100%; padding: 10px 12px; font-size: 0.86rem; text-align: center;
+.question-send {
+  width: 100%; padding: 11px 12px; font-size: 0.9rem; text-align: center;
+}
+.question-send:disabled {
+  opacity: 0.65; cursor: wait;
 }
 .question-close {
   position: absolute; top: 10px; right: 12px;
@@ -177,6 +175,7 @@ select {
 .question-status {
   display: none; margin-top: 10px; font-size: 0.78rem; color: var(--accent);
 }
+.question-status.error { color: #b34a32; }
 .question-status.show { display: block; }
 
 /* ── footer ── */
@@ -216,7 +215,6 @@ footer {
     left: 16px; right: 16px; bottom: 64px;
     width: auto; padding: 18px;
   }
-  .question-actions { grid-template-columns: 1fr; }
 
   /* footer */
   footer { padding: 20px 20px 72px; }
