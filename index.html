@@ -50,14 +50,24 @@
     <span class="logo">酵种问诊日记</span>
     <img src="assets/images/char-group.png" alt="" class="nav-center" style="height:28px;">
     <div class="nav-right">
-      <a href="diary.html" class="nav-link">我的日记</a>
+      <a href="index.html" class="nav-link active">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 7L8 2l6 5v7H10V9H6v5H2z"/></svg>首页
+      </a>
+      <a href="clinic.html" class="nav-link">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 5v6M5 8h6"/></svg>问诊
+      </a>
+      <a href="diary.html" class="nav-link">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="2" width="10" height="12" rx="1"/><path d="M6 5h4M6 8h4M6 11h2"/></svg>日记
+      </a>
       <button class="nav-auth" id="navAuthBtn" onclick="openLogin()">登录</button>
     </div>
     <button class="nav-hamburger" onclick="openMobileMenu()"><span></span><span></span><span></span></button>
   </nav>
   <div class="nav-mobile-menu" id="mobileMenu">
     <button class="nav-mobile-close" onclick="closeMobileMenu()">✕</button>
-    <a href="diary.html" class="nav-link" onclick="closeMobileMenu()">我的日记</a>
+    <a href="index.html" class="nav-link" onclick="closeMobileMenu()">首页</a>
+    <a href="clinic.html" class="nav-link" onclick="closeMobileMenu()">问诊</a>
+    <a href="diary.html" class="nav-link" onclick="closeMobileMenu()">日记</a>
     <button class="nav-auth" id="navAuthBtnMobile" onclick="openLogin()" style="margin-left:0;">登录</button>
   </div>
   <div class="login-overlay" id="loginOverlay" onclick="handleOverlayClick(event)">

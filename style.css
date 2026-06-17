@@ -29,7 +29,9 @@ nav {
 .nav-link {
   font-family: 'Cubic 11', monospace; font-size: 0.8rem;
   color: var(--muted); transition: color 0.2s;
+  display: flex; align-items: center; gap: 5px;
 }
+.nav-link svg { width: 14px; height: 14px; flex-shrink: 0; }
 .nav-link:hover, .nav-link.active { color: var(--accent); }
 .nav-auth {
   font-family: 'Cubic 11', monospace; font-size: 0.8rem;
