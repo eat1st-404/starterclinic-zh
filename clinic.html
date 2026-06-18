@@ -258,6 +258,7 @@
     const AUTH_KEY = 'sc_user_contact';
     const USER_ID_KEY = 'sc_user_id';
     const FEISHU_REPORT_WEBHOOK = 'https://open.feishu.cn/open-apis/bot/v2/hook/6d8d3b64-d345-4f6f-b68d-111e78658900';
+    let _pendingDiagnosisAfterLogin = false;
     function getContact() { return localStorage.getItem(AUTH_KEY); }
     function getUserId() { return localStorage.getItem(USER_ID_KEY); }
 
@@ -272,7 +273,7 @@
     }
     function openLogin() {
       const c = getContact();
-      if (c && confirm(`退出登录（${c}）？`)) { localStorage.removeItem(AUTH_KEY); localStorage.removeItem(USER_ID_KEY); updateNav(); return; }
+      if (c && confirm(`退出登录（${c}）？`)) { localStorage.removeItem(AUTH_KEY); localStorage.removeItem(USER_ID_KEY); _pendingDiagnosisAfterLogin = false; updateNav(); return; }
       if (!c) document.getElementById('loginOverlay').classList.add('open');
     }
     function handleOverlayClick(e) { if (e.target === document.getElementById('loginOverlay')) document.getElementById('loginOverlay').classList.remove('open'); }
@@ -283,8 +284,13 @@
       localStorage.setItem(AUTH_KEY, val); localStorage.setItem(USER_ID_KEY, uid);
       document.getElementById('loginOverlay').classList.remove('open');
       updateNav();
+      if (_pendingDiagnosisAfterLogin) {
+        _pendingDiagnosisAfterLogin = false;
+        setTimeout(runDiagnosis, 0);
+      }
     }
     updateNav();
+    if (!getUserId()) document.getElementById('loginOverlay').classList.add('open');
     function openMobileMenu() { document.getElementById('mobileMenu').classList.add('open'); }
     function closeMobileMenu() { document.getElementById('mobileMenu').classList.remove('open'); }
     function setRatio(val) { document.getElementById('ratioInput').value = val; }
@@ -330,6 +336,12 @@
     let _lastDiagnosis = null;
 
     function runDiagnosis() {
+      if (!getUserId()) {
+        _pendingDiagnosisAfterLogin = true;
+        document.getElementById('loginOverlay').classList.add('open');
+        return;
+      }
+
       const stage = document.querySelector('input[name="stage"]:checked')?.value;
       const rise  = document.querySelector('select[name="rise"]').value;
       const trend = document.querySelector('select[name="trend"]').value;
