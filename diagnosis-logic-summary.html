@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>酵种问诊判断逻辑总结</title>
+  <style>
+    @font-face {
+      font-family: 'Cubic 11';
+      src: url('https://cdn.jsdelivr.net/gh/ACh-K/Cubic-11@main/fonts/web/Cubic_11.woff2') format('woff2');
+    }
+    :root {
+      --bg: #f5ede0;
+      --paper: #fffaf3;
+      --text: #3b2314;
+      --muted: #9a7a5a;
+      --accent: #8b4c1e;
+      --border: #d9c4a8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+      line-height: 1.75;
+      padding: 48px 28px 72px;
+    }
+    main { max-width: 960px; margin: 0 auto; }
+    header { margin-bottom: 36px; }
+    .eyebrow {
+      font-family: 'Cubic 11', monospace;
+      color: var(--accent);
+      font-size: 0.78rem;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-family: 'Cubic 11', monospace;
+      color: var(--accent);
+      font-size: 1.35rem;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    .lead {
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+    section {
+      background: var(--paper);
+      border: 2px solid var(--border);
+      padding: 26px;
+      margin-bottom: 22px;
+    }
+    h2 {
+      font-family: 'Cubic 11', monospace;
+      color: var(--accent);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      margin-bottom: 14px;
+    }
+    h3 {
+      color: var(--accent);
+      font-size: 1rem;
+      margin: 18px 0 8px;
+    }
+    p { margin-bottom: 10px; }
+    ul, ol { padding-left: 1.2em; }
+    li { margin-bottom: 8px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .card {
+      border: 1.5px solid var(--border);
+      background: white;
+      padding: 16px;
+    }
+    .card strong { color: var(--accent); }
+    .flow {
+      display: grid;
+      gap: 10px;
+      counter-reset: flow;
+    }
+    .flow-item {
+      position: relative;
+      background: white;
+      border-left: 4px solid var(--accent);
+      padding: 14px 16px 14px 46px;
+    }
+    .flow-item::before {
+      counter-increment: flow;
+      content: counter(flow);
+      position: absolute;
+      left: 14px;
+      top: 14px;
+      width: 22px;
+      height: 22px;
+      border: 1.5px solid var(--accent);
+      color: var(--accent);
+      display: grid;
+      place-items: center;
+      font-size: 0.78rem;
+      line-height: 1;
+    }
+    .note {
+      background: #ecddc8;
+      border-left: 4px solid var(--accent);
+      padding: 16px 18px;
+      margin-top: 14px;
+    }
+    code {
+      background: #ecddc8;
+      padding: 2px 5px;
+      color: var(--accent);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.9em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      margin-top: 12px;
+    }
+    th, td {
+      border: 1.5px solid var(--border);
+      padding: 11px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      color: var(--accent);
+      background: #fdf8f2;
+      font-weight: 700;
+    }
+    @media (max-width: 680px) {
+      body { padding: 28px 16px 56px; }
+      section { padding: 20px 16px; }
+      .grid { grid-template-columns: 1fr; }
+      h1 { font-size: 1.1rem; }
+      table { font-size: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="eyebrow">酵种问诊日记</div>
+      <h1>问诊判断逻辑总结</h1>
+      <p class="lead">这套逻辑是一棵按优先级排列的判断树：先判断酵种所处阶段，再看粉类、温度、气味、涨幅和趋势，最后输出状态判断和下一步操作。</p>
+    </header>
+
+    <section>
+      <h2>一、用户输入会被转成这些条件</h2>
+      <div class="grid">
+        <div class="card"><strong>阶段</strong><br>第1-3天、第4-10天、成熟酵种、刚从冰箱取出。</div>
+        <div class="card"><strong>喂养方式</strong><br>粉类、喂养比例、室温、观察小时数。</div>
+        <div class="card"><strong>观察状态</strong><br>涨幅、趋势、气味。</div>
+        <div class="card"><strong>派生判断</strong><br>是否只用精制粉、喂养比例是否达到 <code>1:4:4</code> 或更高。</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>二、总判断顺序</h2>
+      <div class="flow">
+        <div class="flow-item">如果用户没有登录，先要求登录，再继续问诊。</div>
+        <div class="flow-item">如果必填观察项缺失，提示先完成三个步骤。</div>
+        <div class="flow-item">先按阶段分流：第1-3天、第4-10天、冰箱唤醒、成熟酵种。</div>
+        <div class="flow-item">阶段内部再按更高优先级条件判断，比如粉类、温度、气味、涨幅和趋势。</div>
+        <div class="flow-item">输出活性评估、当前状态、解释文案和下一步建议，并发送飞书通知。</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>三、阶段分流逻辑</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>阶段</th>
+            <th>核心判断</th>
+            <th>主要目的</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>第1-3天</td>
+            <td>不判断强弱，只判断是否是假涨、早期气味或正常激活。</td>
+            <td>防止用户过早喂食、过早丢弃，把假涨误认为成熟。</td>
+          </tr>
+          <tr>
+            <td>第4-10天</td>
+            <td>重点看粉类是否合适、是否处于安静期、是否开始建立活性。</td>
+            <td>帮助用户熬过建立期，避免因为没有翻倍而乱喂。</td>
+          </tr>
+          <tr>
+            <td>刚从冰箱取出</td>
+            <td>统一判断为苏醒中，需要1-2次温热喂食。</td>
+            <td>提醒用户不要用刚出冰箱后的状态直接判断强弱。</td>
+          </tr>
+          <tr>
+            <td>成熟酵种</td>
+            <td>按温度、饥饿、峰值、过峰、偏酸、偏弱等优先级判断。</td>
+            <td>判断当前能不能用、该喂食、该等待，还是要调整养护环境。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>四、第1-3天：激活期</h2>
+      <ul>
+        <li><strong>涨很多或超过翻倍：</strong>判断为假涨，不代表酵种已经健康。</li>
+        <li><strong>酒精味、奶酪味、几乎没味道：</strong>判断为早期正常气味，坏菌还没有被淘汰干净。</li>
+        <li><strong>其他情况：</strong>正常激活阶段，满72小时之前不要喂食或丢弃。</li>
+      </ul>
+      <div class="note">这一阶段的关键词是“等”。系统不会鼓励用户追求活性，而是提醒不要干预太早。</div>
+    </section>
+
+    <section>
+      <h2>五、第4-10天：建立期</h2>
+      <ol>
+        <li><strong>只用精制粉：</strong>优先提示换粉，建议至少50%全麦。</li>
+        <li><strong>没动 + 完全平静：</strong>判断为安静期，属于常见过程。</li>
+        <li><strong>涨了一点或还在上涨：</strong>说明开始建立酵母活动。</li>
+        <li><strong>有酒精味：</strong>判断为菌群平衡过渡期，不一定是真的饿。</li>
+        <li><strong>翻倍或超过翻倍：</strong>判断为进展不错。</li>
+        <li><strong>其他情况：</strong>兜底为正在建立中。</li>
+      </ol>
+      <div class="note">这一阶段的关键词是“看气泡，不看时钟”。系统反复避免用户因为时间到了就机械喂食。</div>
+    </section>
+
+    <section>
+      <h2>六、成熟酵种：优先级判断</h2>
+      <ol>
+        <li><strong>温度 &gt; 27°C：</strong>优先判断为偏热，提醒高温会让酵种涨快、塌快、偏酸。</li>
+        <li><strong>温度 &lt; 18°C：</strong>判断为偏冷，说明慢不等于弱。</li>
+        <li><strong>酒精味或丙酮味：</strong>判断为饥饿，再根据喂养比例给建议。</li>
+        <li><strong>翻倍以上 + 在峰值：</strong>判断为最佳使用时机。</li>
+        <li><strong>翻倍以上 + 开始回落：</strong>判断为已过峰值，还能用但要尽快处理。</li>
+        <li><strong>翻倍以上 + 还在上涨：</strong>建议继续等待圆顶、气泡多、刚开始回落。</li>
+        <li><strong>浓烈奶酪味：</strong>判断为偏酸，可能乙酸菌偏多。</li>
+        <li><strong>几乎没动 + 超过16小时：</strong>判断为偏弱或喂养比例不合适。</li>
+        <li><strong>其他情况：</strong>兜底为活性低于预期，需要关注。</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>七、喂养比例如何影响建议</h2>
+      <p>比例会被解析成类似 <code>1:2:2</code> 的结构。如果第二段与第一段的比例达到4倍或以上，系统认为已经是较高比例喂养。</p>
+      <table>
+        <thead>
+          <tr>
+            <th>情况</th>
+            <th>判断</th>
+            <th>建议方向</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>有酒精味 + 已经使用 <code>1:4:4</code> 或更高</td>
+            <td>食物量可能够，问题更可能是频率。</td>
+            <td>提高喂食频率，例如每12小时喂一次。</td>
+          </tr>
+          <tr>
+            <td>有酒精味 + 低于 <code>1:4:4</code></td>
+            <td>可能食物不够。</td>
+            <td>提高到 <code>1:3:3</code> 或 <code>1:4:4</code>。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>八、一句话总结</h2>
+      <p>这套系统模拟的是有经验的人看酵种时的优先级：先排除阶段导致的正常现象，再判断环境问题，最后才判断活性强弱和是否适合使用。</p>
+    </section>
+  </main>
+</body>
+</html>
